@@ -14,6 +14,8 @@ name: Pauline
 age: 62
 city: Birmingham
 
+Mister Scoot Erroneous
+
 name: Roger
 age: 38
 city: Bedford
@@ -23,5 +25,5 @@ age: 20
 city: Stevenage
 
 name: Ella
-age: 39
-city: Reading
+age: 39 
+city:    Reading
