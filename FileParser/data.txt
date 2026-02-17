@@ -1,9 +1,27 @@
-John
-Abby
-Sarah
-Conor
-Michael
-Paul
-Peter
-.8
-End
+name: John
+age: 28
+city: London
+
+name: Alice
+age: 25
+city: London
+
+name: Bob
+age: 42
+city: Manchester
+
+name: Pauline
+age: 62
+city: Birmingham
+
+name: Roger
+age: 38
+city: Bedford
+
+name: Peter
+age: 20
+city: Stevenage
+
+name: Ella
+age: 39
+city: Reading
