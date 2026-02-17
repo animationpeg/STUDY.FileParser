@@ -11,25 +11,21 @@ typedef struct // Data structure to hold the information of a person, taken from
 	char city[50];
 } Person;
 
-int main()
+// Function to parse the file and extract the information into the Person structure, returning the number of people parsed
+int parse_file(const char* filename, Person people[], int max_people)
 {
 	// Load the file into memory
-	FILE* file = fopen("data.txt", "r");
-
+	FILE* file = fopen(filename, "r");
 	// Check if the file was opened successfully. Exit with error if it was not.
-	if (file == NULL)
-	{
+	if (!file) {
 		printf("Error opening file\n");
-		return 1;
+		return 0;
 	}
 
-	Person people[MAX_PEOPLE];
-	int person_count = 0;
-
-	// Parse the file and extract the information into the Person structure
-	Person p;
 	char line[256];
 	Person current = {0};
+	int count = 0;
+
 	while (fgets(line, sizeof(line), file))
 	{
 		line[strcspn(line, "\n")] = 0; // Remove the newline character from the end of the line
@@ -37,10 +33,12 @@ int main()
 		// Check for an empty line, which indicates the end of a person's information
 		if (strlen(line) == 0)
 		{
-			// Save person
-			people[person_count++] = current;
-			// Reset for the next person
-			memset(&current, 0, sizeof(Person));
+			if (count < max_people) // Check if we have space in the array before adding the person
+			{
+				people[count++] = current; // Save person
+			}
+			memset(&current, 0, sizeof(Person)); // Use memset to clear the current structure for the next person's information
+			continue;
 		}
 
 		// Parse the line to extract the key and value, assuming the format is "key:value"
@@ -49,12 +47,11 @@ int main()
 
 		if (!key || !value) continue; // Skip lines that don't have both key and value
 
-		while (*value == ' ') value++; // Trim leading spaces from the value)
+		while (*value == ' ') value++; // Trim leading spaces from the value
 
-		// Store the extracted information in the Person structure based on the key
 		if (strcmp(key, "name") == 0)
 		{
-			snprintf(current.name, sizeof(current.name), "%s", value); // Safely copy the name to the 
+			snprintf(current.name, sizeof(current.name), "%s", value); // Safely copy the name to the structure
 		}
 		else if (strcmp(key, "age") == 0)
 		{
@@ -67,19 +64,40 @@ int main()
 	}
 
 	// If the file does not end with an empty line, the last person's information will not be added to the array, so we need to check for that and add it if necessary.
-	if (current.name[0] != "\0")
+	if (current.name[0] != '\0' && count < max_people)
 	{
-		people[person_count++] = current;
+		people[count++] = current;
 	}
 
-	// Close the file before ending the program
 	fclose(file);
+	return count;
+}
+
+// Function to loop through the people array and print the information of each person to the console
+void print_people(Person people[], int count)
+{
+	for (int i = 0; i < count; i++)
+	{
+		printf("Person %d: %s (%d) - %s\n", i + 1, people[i].name, people[i].age, people[i].city);
+	}
+}
+
+int main(int argc, char* argv[])
+{
+	// Check if the filename is provided as a command-line argument. If not, print usage information and exit with error.
+	if (argc < 2)
+	{
+		printf("Usage: %s <filename>\n", argv[0]);
+		return 1;
+	}
+
+	Person people[100];
+
+	// Parse the file and extract the information into the people array, returning the number of people parsed
+	int count = parse_file(argv[1], people, MAX_PEOPLE);
 
 	// Loop through the people array and print the information of each person to the console
-	for (int i = 0; i < person_count; i++)
-	{
-		printf("Name: %s, Age: %d, City: %s\n", people[i].name, people[i].age, people[i].city);
-	}
+	print_people(people, count);
 
 	return 0;
 }
